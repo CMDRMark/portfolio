@@ -4,16 +4,18 @@ import random
 from fastapi import FastAPI, WebSocket, status
 from fastapi.exceptions import RequestValidationError, HTTPException
 from fastapi.responses import JSONResponse
+
 from server.order_models import Order, CreateOrderRequest
 from server.exception_handlers import (validation_exception_handler, quantity_validation_exception_handler,
                                        symbol_validation_exception_handler, QuantityValidationError,
                                        SymbolValidationError, OrderNotFoundError, order_not_found_exception_handler)
+
 from server.database import DB, ORDER_IDS
 
 
 app = FastAPI()
 
-
+# Pydantic model validation error handlers
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(SymbolValidationError, symbol_validation_exception_handler)
 app.add_exception_handler(QuantityValidationError, quantity_validation_exception_handler)
@@ -73,4 +75,4 @@ async def get_orders() -> JSONResponse:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
