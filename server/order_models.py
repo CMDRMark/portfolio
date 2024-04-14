@@ -1,3 +1,5 @@
+import asyncio
+import random
 from pydantic import BaseModel, field_validator
 from enum import Enum, auto
 from datetime import datetime
@@ -26,7 +28,7 @@ class CreateOrderRequest(BaseModel):
 
 class OrderStatus(Enum):
     PENDING = auto()
-    COMPLETED = auto()
+    EXECUTED = auto()
     CANCELLED = auto()
 
 
@@ -73,3 +75,8 @@ class Order:
 
     def __str__(self) -> str:
         return f"Order ID: {self.order_id}, Status: {self.status.name}, Stock: {self.symbol}, Quantity: {self.quantity}"
+
+    async def execute_order(self):
+        await asyncio.sleep(random.uniform(0.1, 2.0))
+        self.update_status(OrderStatus.EXECUTED)
+        return self.get_info()

@@ -11,3 +11,5 @@ def disable_warnings():
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     urllib3_logger = logging.getLogger("urllib3")
     urllib3_logger.setLevel(logging.ERROR)
+
+
