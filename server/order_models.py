@@ -1,12 +1,12 @@
 import asyncio
 import random
+import json
 from pydantic import BaseModel, field_validator
 from enum import Enum, auto
 from datetime import datetime
 
-from server.misc import SUPPORTED_SYMBOLS
-from server.database import ORDER_IDS
-from server.exception_handlers import QuantityValidationError, SymbolValidationError, OrderNotFoundError
+from misc import SUPPORTED_SYMBOLS
+from exception_handlers import QuantityValidationError, SymbolValidationError
 
 
 class CreateOrderRequest(BaseModel):
@@ -40,7 +40,8 @@ class Order:
         self._status = OrderStatus.PENDING
         self._symbol = symbol
         self._quantity = quantity
-        self._created_time = datetime.now()
+        self._created_time = datetime.now().timestamp()
+        self._executed_time = None
 
     @property
     def status(self) -> OrderStatus:
@@ -70,13 +71,17 @@ class Order:
             "symbol": self._symbol,
             "quantity": self._quantity,
             "created_time": self._created_time.isoformat() if hasattr(self._created_time,
-                                                                      'isoformat') else self._created_time
+                                                                      'isoformat') else self._created_time,
+            "executed_time": self._executed_time.isoformat() if hasattr(self._executed_time,
+                                                                        'isoformat') else self._executed_time
         }
 
     def __str__(self) -> str:
         return f"Order ID: {self.order_id}, Status: {self.status.name}, Stock: {self.symbol}, Quantity: {self.quantity}"
 
     async def execute_order(self):
-        await asyncio.sleep(random.uniform(0.1, 2.0))
-        self.update_status(OrderStatus.EXECUTED)
-        return self.get_info()
+        await asyncio.sleep(random.uniform(4, 6.0))
+        if self.status == OrderStatus.PENDING:
+            self.update_status(OrderStatus.EXECUTED)
+            self._executed_time = datetime.now().timestamp()
+            return self.get_info()
