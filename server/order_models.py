@@ -1,22 +1,33 @@
 import asyncio
 import random
-import json
 from pydantic import BaseModel, field_validator
 from enum import Enum, auto
 from datetime import datetime
+from typing import Any
 
 from misc import SUPPORTED_SYMBOLS
-from exception_handlers import QuantityValidationError, SymbolValidationError
+from exception_handlers import QuantityValidationError, SymbolValidationError, QuantityTypeValidationError
 
 
 class CreateOrderRequest(BaseModel):
     symbol: str
-    quantity: int
+    quantity: Any  # Set to Any to allow for validation to be done in the field_validator with custom error messages
 
     @field_validator("symbol")
     def symbol_must_be_supported(cls, value):
         if value not in SUPPORTED_SYMBOLS:
             raise SymbolValidationError(f'Symbol: {str(value)} is not supported')
+        return value
+
+    @field_validator("quantity")
+    def quantity_must_be_integer(cls, value):
+        if not isinstance(value, int):
+            msg = ''
+            if isinstance(value, float):
+                msg = 'Quantity should be a valid integer, got a number with a fractional part'
+            elif isinstance(value, str):
+                msg = 'Quantity must be an integer'
+            raise QuantityTypeValidationError(msg)
         return value
 
     @field_validator("quantity")

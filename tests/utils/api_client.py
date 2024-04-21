@@ -1,15 +1,18 @@
 from typing import Union
-
+import logging
 import requests
 
 from tests.utils.custom_requests import post_request, get_request, delete_request, options_request
-from dotenv import load_dotenv
 import os
 
 
 class TradingAPIClient:
     def __init__(self):
-        load_dotenv()
+        if not os.getenv("INSIDE_DOCKER"):
+            # If we are running the tests locally, we need to load the .env file.
+            # If we are running the tests inside the docker container, the BASE_URL is already present.
+            from dotenv import load_dotenv
+            load_dotenv()
         self.base_url = os.getenv("BASE_URL")
         self.create_order_url = f"{self.base_url}/orders"
         self.get_del_order = f"{self.base_url}/orders/ORDER_ID"

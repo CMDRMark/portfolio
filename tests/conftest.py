@@ -1,9 +1,9 @@
-import contextlib
 import os
+import time
+
 import pytest
 import logging
 import urllib3
-from aiohttp import ClientSession
 
 
 from tests.utils.api_client import TradingAPIClient
@@ -33,10 +33,27 @@ def place_order_correct_and_get_id(trading_api_client):
 
 
 @pytest.fixture(scope="function")
+def place_order_wait_for_execution_and_get_id(trading_api_client):
+    response = trading_api_client.place_order(symbol="EURUSD", quantity=4)
+    if response.status_code != 201:
+        logging.error(f"Failed to place order: {response.json()}")
+    order_id = response.json()["order_id"]
+    order_status = trading_api_client.get_order_by_id(order_id).json()["status"]
+    while order_status != "EXECUTED":
+        time.sleep(2)
+        response = trading_api_client.get_order_by_id(order_id)
+        if response.status_code != 200:
+            logging.error(f"Failed to get order: {response.json()}")
+        order_status = response.json()["status"]
+
+    return order_id
+
+
+@pytest.fixture(scope="function")
 def delete_all_orders(trading_api_client):
     yield
     orders = trading_api_client.get_orders()
-    orders = [x['order_id'] for x in orders.json()]
+    orders = [x['order_id'] for x in orders.json() if x['status'] == "PENDING"]
     for order_id in orders:
         trading_api_client.delete_order(order_id=str(order_id))
 
@@ -45,9 +62,3 @@ def delete_all_orders(trading_api_client):
 def ws_url():
     ws_url = os.getenv("BASE_URL").replace("http", "ws") + "/ws"
     return ws_url
-    #
-    # session = ClientSession()
-    # ws = await session.ws_connect(ws_url)
-    # yield await ws.receive()
-    # await ws.close()
-    # await session.close()
