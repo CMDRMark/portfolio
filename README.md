@@ -67,7 +67,7 @@ Tests check for the following:
 - Test WebSocket Update on Order Cancellation: This test checks if the WebSocket server sends an update when an order is deleted. It expects a message with the order ID and status "Canceled".
 
 After test execution, you will see a test report in the `tests` directory named `report.html`.
-You can check the report example here: [report.html](etc/report.html)
+You can check the report example here: [etc/report.html](https://html-preview.github.io/?url=https://github.com/CMDRMark/portfolio/blob/main/etc/report.html&sort=result)
 
 
 ## Performance Tests
@@ -134,7 +134,7 @@ K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=performance/performance-html-repor
 On the test launch it will open a browser window with real-time test results with the result refresh rate every 3 seconds.
 
 After test execution you will see a test report in the `performance` directory named `performance-html-report.html`.
-You can check the report example [here](etc/performance-html-report.html)
+You can check the report example [etc/performance-html-report.html](https://html-preview.github.io/?url=https://github.com/CMDRMark/portfolio/blob/main/etc/performance-html-report.html)
 
 More info about test launch options can be found [here](https://grafana.com/docs/k6/latest/results-output/web-dashboard/)
 
