@@ -42,7 +42,7 @@ You can check the api documentation by visiting `http://127.0.0.1:8000/docs` or 
 
 ### WebSocket API
 
-The WebSocket API sends real-time updates on order status. Connect to the WebSocket server at `ws://localhost:8000/ws`.
+The WebSocket API sends real-time updates on order status. Connect to the WebSocket server at `ws://127.0.0.1:8000/ws`.
 
 ## Functional Tests
 
